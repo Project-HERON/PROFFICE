@@ -1,0 +1,28 @@
+name: Lint
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  Eslint:
+    name: Eslint
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: yarn install
+      
+      - name: Generate Prisma Types
+        run: yarn prisma generate
+      
+      - name: Run eslint
+        run: yarn lint
