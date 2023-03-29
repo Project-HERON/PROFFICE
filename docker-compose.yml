@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  proffice:
+    container_name: proffice-app
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    networks:
+      - app
+    restart: unless-stopped
+  caddy:
+    image: caddy/caddy:2.6.2-alpine
+    container_name: proffice-reverse-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+    networks:
+      - app
+volumes:
+  caddy_data:
+  caddy_config:
+networks:
+  app:
+    driver: bridge
