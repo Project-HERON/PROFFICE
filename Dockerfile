@@ -12,7 +12,7 @@ RUN yarn install
 
 COPY . .
 
-RUN yarn prisma db push
+RUN yarn prisma db push --skip-generate
 
 RUN yarn build
 
