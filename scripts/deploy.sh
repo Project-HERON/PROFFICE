@@ -6,6 +6,6 @@ git pull
 
 echo "Building PROFFICE docker"
 
-docker-compose up -d --build
+docker compose up -d --build
 
 echo "Deployment complete"
