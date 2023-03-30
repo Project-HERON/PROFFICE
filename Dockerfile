@@ -8,6 +8,8 @@ COPY yarn.lock ./
 
 COPY *.env ./
 
+COPY prisma/ ./prisma/
+
 RUN yarn install
 
 COPY . .
