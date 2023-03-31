@@ -26,3 +26,5 @@ jobs:
       
       - name: Run eslint
         run: yarn lint
+        env:
+          SKIP_ENV_VALIDATION: true
