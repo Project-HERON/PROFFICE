@@ -128,3 +128,24 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if(ctx.session.user.role !== 'admin')
+    throw new TRPCError({ code: "FORBIDDEN" });
+
+  return next();
+});
+
+export const professorProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if(ctx.session.user.role !== 'professor')
+    throw new TRPCError({ code: "FORBIDDEN" });
+
+  return next();
+});
+
+export const studentProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if(ctx.session.user.role !== 'student')
+    throw new TRPCError({ code: "FORBIDDEN" });
+
+  return next();
+});
