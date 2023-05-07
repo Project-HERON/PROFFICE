@@ -2,6 +2,8 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { api } from "~/utils/api";
+import moment from 'moment';
 
 const Home: NextPage = () => {
 
@@ -55,6 +57,16 @@ export default Home;
 const AuthShowcase: React.FC = () => {
   const { data: sessionData } = useSession();
 
+  const { mutateAsync: createAvailability } = api.availability.createAvailability.useMutation();
+
+  const handleTest = async () => {
+    try {
+      await createAvailability({ interval: 15, startDate: moment("2023-05-08 09:00").toDate(), endDate: moment("2023-05-08 10:00").toDate() })
+    } catch (error) {
+      
+    }
+  }
+
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-center text-2xl text-white">
@@ -66,6 +78,12 @@ const AuthShowcase: React.FC = () => {
       >
         {sessionData ? "Sign out" : "Sign in"}
       </button>
+      {sessionData?.user ? <button
+        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
+        onClick={handleTest}
+      >
+        Test Availabilities
+      </button>: <></>}
     </div>
   );
 };

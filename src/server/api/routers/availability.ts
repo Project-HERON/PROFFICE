@@ -6,6 +6,7 @@ import {
   professorProcedure,
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
+import { validIntervals } from "~/utils/constants";
 
 export const availabilityRouter = createTRPCRouter({
   createAvailability: professorProcedure
@@ -14,76 +15,40 @@ export const availabilityRouter = createTRPCRouter({
         .object({
           startDate: z.date(),
           endDate: z.date(),
+          interval: z.number(),
         })
         .refine(
           (data) => moment(data.endDate).isAfter(moment(data.startDate)),
           'End Date must be after Start date',
         )
+        .refine(
+          (data) => validIntervals.includes(data.interval),
+          (data) => ({ message: `${data.interval} is not a valid interval` })
+        )
     )
-    .mutation(async ({ ctx, input: { endDate, startDate } }) => {
+    .mutation(async ({ ctx, input: { endDate, startDate, interval } }) => {
       try {
-        
-        const conflictingAvailabilities = await ctx.prisma.availability.findMany({
-          where: {
-            AND: [
-              {
-                OR: [
-                  {
-                    AND: [
-                      {
-                        startDate: {
-                          lt: startDate
-                        }
-                      },
-                      {
-                        endDate: {
-                          lt: endDate
-                        }
-                      },
-                    ]
-                  },
-                  {
-                    AND: [
-                      {
-                        startDate: {
-                          gt: startDate
-                        }
-                      },
-                      {
-                        endDate: {
-                          gt: endDate
-                        }
-                      },
-                    ]
-                  },
-                ],
-              },
-              {
-                userId: {
-                  equals: ctx.session.user.id
+
+        let tempStartDate: Date = startDate, tempEndDate: Date = moment(startDate).add(interval, 'minutes').toDate();
+        while (moment(tempEndDate).isSameOrBefore(endDate)) {
+          await ctx.prisma.availability.create({
+            data: {
+              startDate: tempStartDate,
+              endDate: tempEndDate,
+              professor: {
+                connect: {
+                  id: ctx.session.user.id,
                 }
-              }
-            ]
-          }
-        });
-
-
-        if(conflictingAvailabilities.length)
-          throw new TRPCError({ code: "CONFLICT", message: "Cannot add availability, conflicting availabilities found!" });
-
-
-        const availability = await ctx.prisma.availability.create({
-          data: {
-            startDate,
-            endDate,
-            user: {
-              connect: {
-                id: ctx.session.user.id,
-              }
+              },
             }
-          }
-        })
+          });
+
+          tempStartDate = tempEndDate;
+          tempEndDate = moment(tempStartDate).add(interval, 'minutes').toDate()
+
+        }
       } catch (error) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: JSON.stringify(error) })
       }
     }),
 });

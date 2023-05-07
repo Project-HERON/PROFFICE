@@ -1,0 +1,1 @@
+export const validIntervals = [15, 30, 45, 60];
