@@ -137,14 +137,14 @@ export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 });
 
 export const professorProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if(ctx.session.user.role !== 'professor')
+  if(!['admin', 'professor'].includes(ctx.session.user.role))
     throw new TRPCError({ code: "FORBIDDEN" });
 
   return next();
 });
 
 export const studentProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if(ctx.session.user.role !== 'student')
+  if(!['admin', 'student'].includes(ctx.session.user.role))
     throw new TRPCError({ code: "FORBIDDEN" });
 
   return next();

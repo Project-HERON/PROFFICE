@@ -72,23 +72,18 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-enum AvailabilityStatus {
-    free
-    busy
-}
-
 model Availability {
-    id        String             @id @default(cuid())
-    user      User               @relation(fields: [userId], references: [id])
-    userId    String
-    status    AvailabilityStatus @default(free)
-    startDate DateTime
-    endDate   DateTime
+    id                 String             @id @default(cuid())
+    professor          User               @relation(fields: [professorId], references: [id])
+    professorId        String
+    startDate          DateTime
+    endDate            DateTime
+    officeHoursSession OfficeHourSession?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@unique([startDate, endDate, userId])
+    @@unique([startDate, endDate, professorId])
 }
 
 enum OfficeHourSessionStatus {
@@ -99,9 +94,14 @@ enum OfficeHourSessionStatus {
 }
 
 model OfficeHourSession {
-    id        String                  @id @default(cuid())
-    users     User[]
-    status    OfficeHourSessionStatus
-    createdAt DateTime                @default(now())
-    updatedAt DateTime                @updatedAt
+    id             String                  @id @default(cuid())
+    student        User                    @relation(fields: [studentId], references: [id])
+    studentId      String
+    status         OfficeHourSessionStatus
+    Availability   Availability            @relation(fields: [availabilityId], references: [id])
+    availabilityId String                  @unique
+    comments       String[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
