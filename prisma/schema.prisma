@@ -48,7 +48,6 @@ enum UserRole {
     admin
     professor
     student
-    unassigned
 }
 
 model User {
@@ -59,7 +58,7 @@ model User {
     image               String?
     accounts            Account[]
     sessions            Session[]
-    role                UserRole            @default(unassigned)
+    role                UserRole            @default(student)
     availabilities      Availability[]
     officeHoursSessions OfficeHourSession[]
 }
