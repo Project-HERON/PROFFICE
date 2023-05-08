@@ -219,44 +219,29 @@ export const officeHoursSessionRouter = createTRPCRouter({
 
         let sessions: (OfficeHourSession & { availability: Availability & { professor: User; }; })[] = [];
 
-        if (ctx.session.user.role === 'professor') {
-          sessions = await ctx.prisma.officeHourSession.findMany({
-            where: {
-              availability: {
-                professor: {
-                  id: {
-                    equals: ctx.session.user.id,
-                  }
-                }
-              }
-            },
-            include: {
-              availability: {
-                include: {
-                  professor: true,
-                }
-              }
-            }
-          });
-        } else {
-          sessions = await ctx.prisma.officeHourSession.findMany({
-            where: {
-              student: {
+        sessions = await ctx.prisma.officeHourSession.findMany({
+          where: {
+            availability: ctx.session.user.role === 'professor' ? {
+              professor: {
                 id: {
                   equals: ctx.session.user.id,
                 }
               }
-            },
-            include: {
-              availability: {
-                include: {
-                  professor: true,
-                }
+            } : undefined,
+            student: ctx.session.user.role === 'student' ? {
+              id: {
+                equals: ctx.session.user.id,
+              }
+            } : undefined,
+          },
+          include: {
+            availability: {
+              include: {
+                professor: true,
               }
             }
-          });
-
-        }
+          }
+        });
 
         return sessions;
 
