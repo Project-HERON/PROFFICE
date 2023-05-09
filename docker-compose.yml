@@ -9,6 +9,8 @@ services:
     networks:
       - app
     restart: unless-stopped
+    depends_on:
+      - postgres
   caddy:
     image: caddy/caddy:2.6.2-alpine
     container_name: proffice-reverse-proxy
@@ -20,6 +22,13 @@ services:
       - $PWD/Caddyfile:/etc/caddy/Caddyfile
     networks:
       - app
+  postgres:
+    image: postgres:latest
+    env_file: ./.env
+    networks:
+      - app
+    volumes:
+      - postgres:/var/lib/postgresql/data
 volumes:
   caddy_data:
   caddy_config:
