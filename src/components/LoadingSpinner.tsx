@@ -1,11 +1,13 @@
-import React from 'react'
+import { Center } from "@chakra-ui/react";
 
-const LoadingSpinner = () => {
+function App() {
+
   return (
-    <div>
-      <h1>Loading...</h1>
-    </div>
-  )
+    <Center height='100vh'>
+      <div className="loading-spinner">
+      </div>
+    </Center>
+  );
 }
 
-export default LoadingSpinner
+export default App;
