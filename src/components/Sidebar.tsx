@@ -1,4 +1,5 @@
 import React, { type ReactNode } from 'react';
+import Image from 'next/image';
 import {
     IconButton,
     Avatar,
@@ -32,18 +33,26 @@ import {
     FiBell,
     FiChevronDown,
 } from 'react-icons/fi';
+import {
+    RiUserSearchFill,
+    RiUserSearchLine
+} from 'react-icons/ri';
 import type { IconType } from 'react-icons';
+import bookLogo from '../../assets/bookLogo.png';
 import { signOut, useSession } from 'next-auth/react';
 
 interface LinkItemProps {
     name: string;
     icon: IconType;
+    link?: string;
 }
+
 const LinkItems: Array<LinkItemProps> = [
-    { name: 'Calendar', icon: FiHome },
-    { name: 'Search', icon: FiTrendingUp },
-    { name: 'Sessions', icon: FiCompass },
-    { name: 'Availabilities', icon: FiStar },
+    { name: 'Calendar', icon: FiHome, link: '/' },
+    { name: 'Professors', icon: RiUserSearchFill, link: '/professors'},
+    { name: 'Students', icon: RiUserSearchLine, link: '/students' },
+    { name: 'Sessions', icon: FiCompass, link: '/sessions' },
+    { name: 'Availabilities', icon: FiStar, link: '/availabilities' },
 ];
 
 export default function Sidebar({
@@ -97,13 +106,14 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
             h="full"
             {...rest}>
             <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-                <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
+                <Image className="w-12" src={bookLogo} alt=""/>
+                <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" textColor="proffice.400">
                     PROFFICE
                 </Text>
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
             </Flex>
             {LinkItems.map((link) => (
-                <NavItem key={link.name} icon={link.icon}>
+                <NavItem key={link.name} icon={link.icon} link={link.link || '#'}>
                     {link.name}
                 </NavItem>
             ))}
@@ -114,10 +124,11 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 interface NavItemProps extends FlexProps {
     icon: IconType;
     children: string;
+    link: string;
 }
-const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
     return (
-        <Link href="#" style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
+        <Link href={link} style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
             <Flex
                 align="center"
                 p="4"
@@ -126,7 +137,7 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
                 role="group"
                 cursor="pointer"
                 _hover={{
-                    bg: 'proffice.blue',
+                    bg: 'proffice.400',
                     color: 'white',
                 }}
                 {...rest}>
