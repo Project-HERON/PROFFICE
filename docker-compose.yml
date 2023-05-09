@@ -32,6 +32,8 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  postgres:
+
 networks:
   app:
     driver: bridge
