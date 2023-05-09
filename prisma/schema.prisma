@@ -48,7 +48,6 @@ enum UserRole {
     admin
     professor
     student
-    unassigned
 }
 
 model User {
@@ -59,7 +58,7 @@ model User {
     image               String?
     accounts            Account[]
     sessions            Session[]
-    role                UserRole            @default(unassigned)
+    role                UserRole            @default(student)
     availabilities      Availability[]
     officeHoursSessions OfficeHourSession[]
 }
@@ -97,10 +96,9 @@ model OfficeHourSession {
     id             String                  @id @default(cuid())
     student        User                    @relation(fields: [studentId], references: [id])
     studentId      String
-    status         OfficeHourSessionStatus
-    Availability   Availability            @relation(fields: [availabilityId], references: [id])
+    status         OfficeHourSessionStatus @default(requested)
+    availability   Availability            @relation(fields: [availabilityId], references: [id])
     availabilityId String                  @unique
-    comments       String[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
