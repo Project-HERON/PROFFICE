@@ -24,7 +24,7 @@ const Home: NextPage = () => {
     return (
         <>
             <Head>
-                <title>PROFFICE: Login</title>
+                <title>Login or sign up</title>
                 <meta name="description" content="PROFFICE: Schedule smarter" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
