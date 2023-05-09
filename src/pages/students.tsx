@@ -1,11 +1,25 @@
 import { UserRole } from "@prisma/client";
 import { type NextPage } from "next";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import LoadingSpinner from "~/components/LoadingSpinner";
 import Search from "~/components/Search";
 import Sidebar from "~/components/Sidebar";
 
 const Home: NextPage = () => {
 
+    const router = useRouter();
+    const { status } = useSession({
+        required: true,
+        onUnauthenticated() {
+            void router.push('/login');
+        },
+    })
+
+    if (status === "loading") {
+        return <LoadingSpinner />
+    }
 
     return (
         <>
@@ -16,7 +30,7 @@ const Home: NextPage = () => {
             </Head>
             <main>
                 <Sidebar>
-                    <Search role={UserRole.student}/>
+                    <Search role={UserRole.student} />
                 </Sidebar>
             </main>
 
