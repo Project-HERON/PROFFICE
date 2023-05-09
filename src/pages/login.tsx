@@ -6,6 +6,7 @@ import Image from 'next/image';
 import loginPageImage from "../../assets/loginIllustration.png";
 import outlookIcon from '../../assets/outlook-icon.png';
 import logo from '../../assets/logo.png';
+import LoadingSpinner from "~/components/LoadingSpinner";
 
 const Home: NextPage = () => {
 
@@ -13,12 +14,13 @@ const Home: NextPage = () => {
     const { status } = useSession()
 
     if (status === "loading") {
-        return <h1>Loading...</h1>
+        return <LoadingSpinner />
     }
 
-    if (status === 'authenticated') {
+    if(status === 'authenticated'){
         void router.push('/');
     }
+
     return (
         <>
             <Head>
@@ -42,7 +44,7 @@ const Home: NextPage = () => {
                                     </div>
 
                                     <div className="flex flex-col justify-center items-center">
-                                        <button onClick={() => void signIn('azure-ad')} className="relative inline-flex items-center justify-center p-0.5 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800">
+                                        <button onClick={() => void signIn('azure-ad', { callbackUrl: '/' })} className="relative inline-flex items-center justify-center p-0.5 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800">
                                             <span className="relative px-20 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                                                 <div className="flex gap-3">
                                                     <Image className="h-6 w-6" src={outlookIcon} alt='' />
