@@ -1,6 +1,7 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { availabilityRouter } from "~/server/api/routers/availability";
 import { officeHoursSessionRouter } from "./routers/officeHoursSession";
+import { userRouter } from "./routers/user";
 
 /**
  * This is the primary router for your server.
@@ -9,7 +10,8 @@ import { officeHoursSessionRouter } from "./routers/officeHoursSession";
  */
 export const appRouter = createTRPCRouter({
   availability: availabilityRouter,
-  officeHoursSession: officeHoursSessionRouter
+  officeHoursSession: officeHoursSessionRouter,
+  user: userRouter
 });
 
 // export type definition of API
