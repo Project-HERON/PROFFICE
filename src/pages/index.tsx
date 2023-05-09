@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 
 import Sidebar from "~/components/Sidebar";
 import Calendar from "~/components/Calendar";
+import LoadingSpinner from "~/components/LoadingSpinner";
 
 const Home: NextPage = () => {
 
@@ -17,7 +18,7 @@ const Home: NextPage = () => {
   })
 
   if (status === "loading") {
-    return <h1>Loading...</h1>
+    return <LoadingSpinner />
   }
 
   return (

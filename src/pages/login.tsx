@@ -3,6 +3,7 @@ import Head from "next/head";
 import { Button } from '@chakra-ui/react';
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import LoadingSpinner from "~/components/LoadingSpinner";
 
 const Home: NextPage = () => {
 
@@ -10,7 +11,7 @@ const Home: NextPage = () => {
     const { status } = useSession()
 
     if (status === "loading") {
-        return <h1>Loading...</h1>
+        return <LoadingSpinner />
     }
 
     if(status === 'authenticated'){
