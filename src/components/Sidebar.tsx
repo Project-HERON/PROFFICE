@@ -10,7 +10,6 @@ import {
     VStack,
     Icon,
     useColorModeValue,
-    Link,
     Drawer,
     DrawerContent,
     Text,
@@ -25,10 +24,8 @@ import {
 } from '@chakra-ui/react';
 import {
     FiHome,
-    FiTrendingUp,
     FiCompass,
     FiStar,
-    FiSettings,
     FiMenu,
     FiBell,
     FiChevronDown,
@@ -40,6 +37,7 @@ import {
 import type { IconType } from 'react-icons';
 import bookLogo from '../../assets/bookLogo.png';
 import { signOut, useSession } from 'next-auth/react';
+import { Link } from '@chakra-ui/next-js'
 
 interface LinkItemProps {
     name: string;
@@ -139,6 +137,9 @@ const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
                 _hover={{
                     bg: 'proffice.400',
                     color: 'white',
+                }}
+                _activeLink={{
+                    bg: 'red'
                 }}
                 {...rest}>
                 {icon && (
