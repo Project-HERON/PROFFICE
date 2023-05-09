@@ -217,9 +217,7 @@ export const officeHoursSessionRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       try {
 
-        let sessions: (OfficeHourSession & { availability: Availability & { professor: User; }; })[] = [];
-
-        sessions = await ctx.prisma.officeHourSession.findMany({
+        const sessions = await ctx.prisma.officeHourSession.findMany({
           where: {
             availability: ctx.session.user.role === 'professor' ? {
               professor: {
@@ -239,7 +237,8 @@ export const officeHoursSessionRouter = createTRPCRouter({
               include: {
                 professor: true,
               }
-            }
+            },
+            student: true
           }
         });
 

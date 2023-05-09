@@ -2,8 +2,33 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import { Skeleton } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
+
+import { api } from '~/utils/api';
+import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 
 const Calendar = () => {
+
+    const { isLoading, data: myOfficeHoursSessions, error } = api.officeHoursSession.getMyOfficeHoursSessions.useQuery(undefined, { refetchInterval: 5000 });
+    const toast = useToast();
+    const router = useRouter();
+    const { data: sessionData } = useSession();
+
+    if (isLoading)
+        return <Skeleton height='80vh' speed={1.2} />
+
+    if (error || !myOfficeHoursSessions) {
+        toast({
+            title: 'Error Showing the calendar',
+            description: error.message,
+            status: 'error',
+            duration: 5000,
+        })
+        void router.push('/500');
+        return <h1>Error...</h1>
+    }
 
     return (
         <FullCalendar
@@ -17,16 +42,14 @@ const Calendar = () => {
             editable={true}
             selectable={true}
             selectMirror={true}
-            dayMaxEvents={true}
+            dayMaxEvents={5}
             weekends={false}
-            events={[
-                { title: 'Meeting', start: new Date() }
-            ]}
-            // initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
-            // select={this.handleDateSelect}
-            // eventContent={renderEventContent} // custom render function
-            // eventClick={this.handleEventClick}
-            // eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
+            events={myOfficeHoursSessions.map((session) => ({
+                id: session.id,
+                title: `Session with ${sessionData!.user.role === 'professor' ? session.student.name! : session.availability.professor.name!}`,
+                date: session.availability.startDate
+            }))}
+        // eventClick={}
         />
     );
 };

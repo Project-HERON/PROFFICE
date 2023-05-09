@@ -41,10 +41,9 @@ interface LinkItemProps {
 }
 const LinkItems: Array<LinkItemProps> = [
     { name: 'Calendar', icon: FiHome },
-    // { name: 'Trending', icon: FiTrendingUp },
-    // { name: 'Explore', icon: FiCompass },
-    // { name: 'Favourites', icon: FiStar },
-    // { name: 'Settings', icon: FiSettings },
+    { name: 'Search', icon: FiTrendingUp },
+    { name: 'Sessions', icon: FiCompass },
+    { name: 'Availabilities', icon: FiStar },
 ];
 
 export default function Sidebar({
@@ -53,7 +52,6 @@ export default function Sidebar({
     children: ReactNode;
 }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { data: sessionData } = useSession();
 
 
     return (
@@ -128,7 +126,7 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
                 role="group"
                 cursor="pointer"
                 _hover={{
-                    bg: 'cyan.400',
+                    bg: 'proffice.blue',
                     color: 'white',
                 }}
                 {...rest}>
@@ -219,10 +217,8 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                             bg={useColorModeValue('white', 'gray.900')}
                             borderColor={useColorModeValue('gray.200', 'gray.700')}>
                             <MenuItem>Profile</MenuItem>
-                            {/* <MenuItem>Settings</MenuItem> */}
-                            {/* <MenuItem>Billing</MenuItem> */}
                             <MenuDivider />
-                            <MenuItem onClick={() => signOut({ callbackUrl: '/login' })}>Sign out</MenuItem>
+                            <MenuItem onClick={() => void signOut({ callbackUrl: '/login' })}>Sign out</MenuItem>
                         </MenuList>
                     </Menu>
                 </Flex>
