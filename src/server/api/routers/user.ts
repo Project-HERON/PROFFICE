@@ -13,10 +13,9 @@ export const userRouter = createTRPCRouter({
     .input(
       z
         .object({
-          role: z.string(),
+          role: z.enum([UserRole.professor, UserRole.student]),
           query: z.string().min(1).max(50),
         })
-        .refine(data => (Object.values(UserRole) as string[]).includes(data.role), 'Invalid role')
     )
     .query(async ({ ctx, input: { query, role } }) => {
       try {
@@ -42,7 +41,7 @@ export const userRouter = createTRPCRouter({
               },
               {
                 role: {
-                  equals: role as UserRole
+                  equals: role,
                 }
               }
 
