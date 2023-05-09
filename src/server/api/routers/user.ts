@@ -17,7 +17,7 @@ export const userRouter = createTRPCRouter({
           query: z.string().min(1).max(50),
         })
     )
-    .query(async ({ ctx, input: { query, role } }) => {
+    .mutation(async ({ ctx, input: { query, role } }) => {
       try {
 
         const users = await ctx.prisma.user.findMany({

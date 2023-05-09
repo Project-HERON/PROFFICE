@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 
 import Sidebar from "~/components/Sidebar";
 import Calendar from "~/components/Calendar";
+import Search from "~/components/Search";
 import LoadingSpinner from "~/components/LoadingSpinner";
 
 const Home: NextPage = () => {
