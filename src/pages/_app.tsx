@@ -2,11 +2,14 @@ import { type AppType } from "next/app";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { ChakraProvider } from "@chakra-ui/react";
+import { Provider as ReduxProvider } from 'react-redux'
 
 import { api } from "~/utils/api";
+import theme from "~/utils/theme";
+import { store } from "~/store/store";
 
 import "~/styles/globals.css";
-import theme from "~/utils/theme";
+import Modals from "~/components/modals";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -15,7 +18,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <ChakraProvider theme={theme}>
-        <Component {...pageProps} />
+        <ReduxProvider store={store}>
+          <Component {...pageProps} />
+          <Modals />
+        </ReduxProvider>
       </ChakraProvider>
     </SessionProvider>
   );
