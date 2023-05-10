@@ -21,23 +21,28 @@ import {
     MenuDivider,
     MenuItem,
     MenuList,
+    Button,
 } from '@chakra-ui/react';
 import {
     FiHome,
     FiCompass,
     FiStar,
     FiMenu,
-    FiBell,
     FiChevronDown,
+    FiPlusCircle,
 } from 'react-icons/fi';
 import {
     RiUserSearchFill,
     RiUserSearchLine
 } from 'react-icons/ri';
 import type { IconType } from 'react-icons';
-import bookLogo from '../../assets/bookLogo.png';
 import { signOut, useSession } from 'next-auth/react';
 import { Link } from '@chakra-ui/next-js'
+import { useRouter } from 'next/router';
+
+import bookLogo from '~/../assets/bookLogo.png';
+import { useAppDispatch } from '~/store/hooks';
+import { openModal } from '~/store/modalsSlice';
 
 interface LinkItemProps {
     name: string;
@@ -47,7 +52,7 @@ interface LinkItemProps {
 
 const LinkItems: Array<LinkItemProps> = [
     { name: 'Calendar', icon: FiHome, link: '/' },
-    { name: 'Professors', icon: RiUserSearchFill, link: '/professors'},
+    { name: 'Professors', icon: RiUserSearchFill, link: '/professors' },
     { name: 'Students', icon: RiUserSearchLine, link: '/students' },
     { name: 'Sessions', icon: FiCompass, link: '/sessions' },
     { name: 'Availabilities', icon: FiStar, link: '/availabilities' },
@@ -104,8 +109,8 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
             h="full"
             {...rest}>
             <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-                <Image className="w-12" src={bookLogo} alt=""/>
-                <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" textColor="proffice.400">
+                <Image className="w-12" src={bookLogo} alt="" />
+                <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" textColor="proffice.300">
                     PROFFICE
                 </Text>
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
@@ -125,6 +130,8 @@ interface NavItemProps extends FlexProps {
     link: string;
 }
 const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
+    const router = useRouter();
+
     return (
         <Link href={link} style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
             <Flex
@@ -132,15 +139,14 @@ const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
                 p="4"
                 mx="4"
                 borderRadius="lg"
+                my="2"
                 role="group"
                 cursor="pointer"
                 _hover={{
-                    bg: 'proffice.400',
+                    bg: 'proffice.300',
                     color: 'white',
                 }}
-                _activeLink={{
-                    bg: 'red'
-                }}
+                bg={ link === router.pathname ? 'proffice.300' : undefined}
                 {...rest}>
                 {icon && (
                     <Icon
@@ -163,6 +169,8 @@ interface MobileProps extends FlexProps {
 }
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
     const { data: sessionData } = useSession();
+
+    const dispatch = useAppDispatch();
 
     return (
         <Flex
@@ -192,12 +200,12 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
             </Text>
 
             <HStack spacing={{ base: '0', md: '6' }}>
-                <IconButton
-                    size="lg"
-                    variant="ghost"
-                    aria-label="open menu"
-                    icon={<FiBell />}
-                />
+                {
+                    sessionData && sessionData.user.role === 'professor' ?
+                        <Button onClick={() => dispatch(openModal('addAvailabilityModal'))} leftIcon={<FiPlusCircle />} colorScheme='proffice'>
+                            Add Availability
+                        </Button> : <></>
+                }
                 <Flex alignItems={'center'}>
                     <Menu>
                         <MenuButton
