@@ -15,8 +15,13 @@ const Calendar = () => {
     const toast = useToast();
     const router = useRouter();
     const { data: sessionData } = useSession();
+    const { isLoading: isLoadingAvailability, data: myAvailabilities, error: errorAvailability } =
+    api.availability.getProfessorAvailability.useQuery(
+      { professorId: sessionData?.user.id || "" },
+      { refetchInterval: 5000 }
+    );
 
-    if (isLoading)
+    if (isLoading || isLoadingAvailability)
         return <Skeleton height='80vh' speed={1.2} />
 
     if (error || !myOfficeHoursSessions) {
@@ -29,6 +34,17 @@ const Calendar = () => {
         void router.push('/500');
         return <h1>Error...</h1>
     }
+
+    if (errorAvailability || !myAvailabilities) {
+        toast({
+            title: 'Error Showing the calendar',
+            description: errorAvailability.message,
+            status: 'error',
+            duration: 5000,
+        })
+        void router.push('/500');
+        return <h1>Error...</h1>
+    } 
 
     return (
         <FullCalendar
@@ -44,11 +60,20 @@ const Calendar = () => {
             selectMirror={true}
             dayMaxEvents={5}
             weekends={false}
-            events={myOfficeHoursSessions.map((session) => ({
-                id: session.id,
-                title: `Session with ${sessionData!.user.role === 'professor' ? session.student.name! : session.availability.professor.name!}`,
-                date: session.availability.startDate
-            }))}
+            events={[
+                ...myOfficeHoursSessions.map((session) => ({
+                    id: session.id,
+                    title: `Session with ${sessionData!.user.role === 'professor' ? session.student.name! : session.availability.professor.name!}`,
+                    date: session.availability.startDate,
+                    color: 'red'
+                })), 
+                ...myAvailabilities.map((availability) => ({
+                    id: availability.id,
+                    title: "Free spot",
+                    date: availability.startDate,
+                    color: 'green'
+                }))
+            ]}  
         // eventClick={}
         />
     );
