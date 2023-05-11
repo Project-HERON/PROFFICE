@@ -78,6 +78,9 @@ export const availabilityRouter = createTRPCRouter({
                 id: true,
               }
             }
+          },
+          orderBy: {
+            startDate: 'asc'
           }
         })
 

@@ -11,40 +11,27 @@ import { useSession } from 'next-auth/react'
 
 const Calendar = () => {
 
-    const { isLoading, data: myOfficeHoursSessions, error } = api.officeHoursSession.getMyOfficeHoursSessions.useQuery(undefined, { refetchInterval: 5000 });
     const toast = useToast();
     const router = useRouter();
     const { data: sessionData } = useSession();
-    const { isLoading: isLoadingAvailability, data: myAvailabilities, error: errorAvailability } =
-    api.availability.getProfessorAvailability.useQuery(
-      { professorId: sessionData?.user.id || "" },
-      { refetchInterval: 5000 }
-    );
+    const { isLoading: isCalendarLoading, data: myCalendar, error: calendarError } =
+        api.officeHoursSession.getMyCalendar.useQuery(
+            undefined, { refetchInterval: 5000 }
+        );
 
-    if (isLoading || isLoadingAvailability)
-        return <Skeleton height='80vh' speed={1.2} />
+    if (isCalendarLoading)
+        return <Skeleton height='80vh' speed={1.2} />;
 
-    if (error || !myOfficeHoursSessions) {
+    if (calendarError) {
         toast({
             title: 'Error Showing the calendar',
-            description: error.message,
+            description: calendarError.message,
             status: 'error',
             duration: 5000,
         })
         void router.push('/500');
-        return <h1>Error...</h1>
+        return <></>
     }
-
-    if (errorAvailability || !myAvailabilities) {
-        toast({
-            title: 'Error Showing the calendar',
-            description: errorAvailability.message,
-            status: 'error',
-            duration: 5000,
-        })
-        void router.push('/500');
-        return <h1>Error...</h1>
-    } 
 
     return (
         <FullCalendar
@@ -54,27 +41,26 @@ const Calendar = () => {
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             }}
-            initialView='dayGridMonth'
+            initialView='timeGridWeek'
             editable={true}
             selectable={true}
             selectMirror={true}
-            dayMaxEvents={5}
-            weekends={false}
-            events={[
-                ...myOfficeHoursSessions.map((session) => ({
+            dayMaxEvents={3}
+            events={
+                myCalendar.map((session) => ({
                     id: session.id,
-                    title: `Session with ${sessionData!.user.role === 'professor' ? session.student.name! : session.availability.professor.name!}`,
-                    date: session.availability.startDate,
-                    color: 'red'
-                })), 
-                ...myAvailabilities.map((availability) => ({
-                    id: availability.id,
-                    title: "Free spot",
-                    date: availability.startDate,
-                    color: 'green'
+                    date: session.startDate,
+                    end: session.endDate,
+                    editable: false,
+                    durationEditable: false,
+                    title: sessionData!.user.role === 'professor' ? session.officeHoursSession ? `Session with ${session.officeHoursSession.student.name?.split('<')[0] || ''}` : `Available` : `Session with Professor: ${session.professor.name?.split('<')[0] || ''}`,
+                    backgroundColor: session.officeHoursSession ? 'red' : 'green',
+                    display: ''
                 }))
-            ]}  
-        // eventClick={}
+            }
+            eventOverlap={false}
+            // eventClick={}
+            // businessHours={[]}
         />
     );
 };

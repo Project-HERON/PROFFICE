@@ -54,8 +54,8 @@ const LinkItems: Array<LinkItemProps> = [
     { name: 'Calendar', icon: FiHome, link: '/' },
     { name: 'Professors', icon: RiUserSearchFill, link: '/professors' },
     { name: 'Students', icon: RiUserSearchLine, link: '/students' },
-    { name: 'Sessions', icon: FiCompass, link: '/sessions' },
-    { name: 'Availabilities', icon: FiStar, link: '/availabilities' },
+    // { name: 'Sessions', icon: FiCompass, link: '/sessions' },
+    // { name: 'Availabilities', icon: FiStar, link: '/availabilities' },
 ];
 
 export default function Sidebar({
