@@ -109,8 +109,9 @@ export const officeHoursSessionRouter = createTRPCRouter({
           }
         });
 
-        if (session.status !== 'confirmed')
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Session must be confirmed to be cancelled" })
+        // Will add in a later version
+        // if (session.status !== 'confirmed')
+        //   throw new TRPCError({ code: "BAD_REQUEST", message: "Session must be confirmed to be cancelled" })
 
         await ctx.prisma.officeHourSession.delete({
           where: {

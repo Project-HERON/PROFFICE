@@ -113,7 +113,7 @@ export const availabilityRouter = createTRPCRouter({
           }
         })
 
-        if(availability.professorId !== ctx.session.user.id)
+        if (availability.professorId !== ctx.session.user.id)
           throw (new TRPCError({ code: "FORBIDDEN", message: "You don't have permission to delete this availability" }))
 
         await ctx.prisma.availability.delete({
@@ -133,5 +133,41 @@ export const availabilityRouter = createTRPCRouter({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: JSON.stringify(error) })
       }
     }),
+  getAvailability: professorOrStudentProcedure
+    .input(
+      z
+        .object({
+          availabilityId: z.string().cuid(),
+        })
+    )
+    .query(async ({ ctx, input: { availabilityId } }) => {
+      try {
 
+        const availability = await ctx.prisma.availability.findUniqueOrThrow({
+          where: {
+            id: availabilityId
+          },
+          include: {
+            officeHoursSession: {
+              include: {
+                student: true
+              }
+            },
+            professor: true
+          }
+        })
+
+        return availability;
+
+      } catch (error) {
+        if (error instanceof TRPCError)
+          throw (error)
+
+        if (error instanceof PrismaClientKnownRequestError)
+          if (error.code === 'P2025')
+            throw new TRPCError({ code: "NOT_FOUND", message: "Availability Not Found" })
+
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: JSON.stringify(error) })
+      }
+    }),
 });

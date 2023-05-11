@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import {
-    Avatar, Badge, Box, Button, Flex, GridItem, Input, InputGroup, SimpleGrid, Text, useDisclosure
+    Avatar, Badge, Box, Button, Flex, GridItem, Input, InputGroup, SimpleGrid, Text, useDisclosure, useToast
 } from '@chakra-ui/react';
 import { AiOutlineSearch } from 'react-icons/ai';
 import type { User, UserRole } from '@prisma/client';
@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react';
 
 import { api } from '~/utils/api';
 import BookSessionModal from './modals/BookSessionModal';
+import { TRPCClientError } from '@trpc/client';
 
 const Search = ({ role }: { role: Exclude<UserRole, "admin"> }) => {
 
@@ -19,14 +20,37 @@ const Search = ({ role }: { role: Exclude<UserRole, "admin"> }) => {
     } = useDisclosure({ defaultIsOpen: false })
     const { mutateAsync: searchUsers } = api.user.searchUsers.useMutation();
     const { data: sessionData } = useSession();
+    const toast = useToast()
 
-    const handleSearch = async () => {
+    const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         try {
             const data = await searchUsers({ query: keyword, role: role })
             setUsers(data);
-            console.log(data);
         } catch (error) {
-            console.error(error);
+            if (error instanceof TRPCClientError) {
+                try {
+                    const messages = JSON.parse(error.message) as Array<{ code: string | number; message: string; path: Array<string> }>;
+                    toast({
+                        title: 'Error searching',
+                        description: messages.map(m => m.message).join(' - '),
+                        status: 'error'
+                    })
+                } catch (err) {
+                    toast({
+                        title: 'Error searching',
+                        description: error.message,
+                        status: 'error'
+                    })
+                }
+            }
+
+            else
+                toast({
+                    title: 'Error searching',
+                    description: 'Something went wrong',
+                    status: 'error'
+                })
         }
     }
 
@@ -34,13 +58,15 @@ const Search = ({ role }: { role: Exclude<UserRole, "admin"> }) => {
         <>
             <div className='flex flex-col justify-center items-center gap-8'>
                 <div className='w-1/2 bg-white rounded-l-lg'>
-                    <InputGroup>
-                        <Input style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }} type='search' placeholder='Search...' onChange={(e) => setKeyword(e.target.value)} value={keyword} />
-                        <Button style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }} colorScheme='proffice' width={'100px'} onClick={handleSearch}><AiOutlineSearch /></Button>
-                    </InputGroup>
+                    <form onSubmit={handleSearch}>
+                        <InputGroup>
+                            <Input style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }} type='search' placeholder='Search...' onChange={(e) => setKeyword(e.target.value)} value={keyword} />
+                            <Button type='submit' style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }} colorScheme='proffice' width={'100px'}><AiOutlineSearch /></Button>
+                        </InputGroup>
+                    </form>
                 </div>
                 <SimpleGrid className="p-10" columns={[1, 2, 3]} gap={6}>
-                    {users.map((user, index) => (
+                    {users.length ? users.map((user, index) => (
                         <GridItem w='100%' h='100%' bg='white' className="rounded-xl p-4" key={`user_${index}`}>
                             <Flex align="center" gap="10">
                                 <Flex>
@@ -64,7 +90,7 @@ const Search = ({ role }: { role: Exclude<UserRole, "admin"> }) => {
                                     : <></>}
                             </Flex>
                         </GridItem>
-                    ))}
+                    )) : <h5>No Users Found</h5>}
 
                 </SimpleGrid>
             </div>
