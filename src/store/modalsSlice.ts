@@ -7,9 +7,6 @@ interface ModalsState {
   addAvailabilityModal: {
     isOpen: boolean;
   };
-  bookSessionModal: {
-    isOpen: boolean;
-  };
 }
 
 // Define the initial state using that type
@@ -17,9 +14,6 @@ const initialState: ModalsState = {
   addAvailabilityModal: {
     isOpen: false,
   },
-  bookSessionModal: {
-    isOpen: false,
-  }
 }
 
 export const modalsSlice = createSlice({
@@ -40,7 +34,5 @@ export const { closeModal, openModal } = modalsSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectAvailabilityModalState = (state: RootState) => state.modals.addAvailabilityModal.isOpen;
-
-export const selectBookSessionModalState = (state: RootState) => state.modals.bookSessionModal.isOpen;
 
 export default modalsSlice.reducer;

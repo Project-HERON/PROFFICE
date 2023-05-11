@@ -255,5 +255,46 @@ export const officeHoursSessionRouter = createTRPCRouter({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: JSON.stringify(error) })
       }
     }),
+  getMyCalendar: professorOrStudentProcedure
+    .query(async ({ ctx }) => {
+      try {
 
+        const sessions = await ctx.prisma.availability.findMany({
+          where: {
+              professor: ctx.session.user.role === 'professor' ? {
+                id: {
+                  equals: ctx.session.user.id,
+                }
+            } : undefined,
+            officeHoursSession: {
+              student: ctx.session.user.role === 'student' ? {
+                id: {
+                  equals: ctx.session.user.id,
+                }
+              } : undefined,
+            }
+          },
+          include: {
+            officeHoursSession: {
+              include: {
+                student: true,
+              }
+            },
+            professor: true
+          }
+        });
+
+        return sessions;
+
+      } catch (error) {
+        if (error instanceof TRPCError)
+          throw error
+
+        if (error instanceof PrismaClientKnownRequestError)
+          if (error.code === 'P2025')
+            throw new TRPCError({ code: "NOT_FOUND", message: "Office Hours Session Not Found" })
+
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: JSON.stringify(error) })
+      }
+    }),
 });
