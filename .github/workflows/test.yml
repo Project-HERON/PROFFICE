@@ -30,13 +30,13 @@ jobs:
           SKIP_ENV_VALIDATION: true
           
   Test_with_docker_compose:
-    name: Testing
+    name: Running tests with docker compose
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: isbang/compose-action@v1.4.1
         with:
-          compose-file: "./docker-compose.test.yml"
+          compose-file: "../../docker-compose.test.yml"
           compose-flags: "-d --build"
         env:
           AZURE_AD_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
