@@ -1,4 +1,4 @@
-name: Lint
+name: Testing
 
 on:
   pull_request:
@@ -6,8 +6,8 @@ on:
       - master
 
 jobs:
-  Eslint:
-    name: Eslint
+  Test:
+    name: Running tests with jest
     runs-on: ubuntu-22.04
     steps:
       - name: Check out Git repository
