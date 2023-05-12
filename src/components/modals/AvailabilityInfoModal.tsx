@@ -14,6 +14,7 @@ import { api } from "~/utils/api";
 import { TRPCClientError } from "@trpc/client";
 import moment from "moment";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
 const AvailabilityInfoModal = ({ availabilityId, onClose }: { availabilityId: string; onClose: () => void }) => {
 
@@ -28,6 +29,7 @@ const AvailabilityInfoModal = ({ availabilityId, onClose }: { availabilityId: st
     } = api.officeHoursSession.cancelOfficeHoursSession.useMutation()
     const toast = useToast();
     const router = useRouter();
+    const { data: sessionData } = useSession();
 
 
     if (availabilityLoading)
@@ -88,15 +90,15 @@ const AvailabilityInfoModal = ({ availabilityId, onClose }: { availabilityId: st
         >
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>{availability.officeHoursSession ? `Session with ${availability.officeHoursSession.student.name || ''}` : `Availability information`}</ModalHeader>
+                <ModalHeader>{availability.officeHoursSession ? sessionData!.user.role === 'professor' ? `Session with ${availability.officeHoursSession.student.name || ''}` : `Session with Professor: ${availability.professor.name || ''}` : `Availability information`}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody pb={6}>
                     <FormControl>
-                        <FormLabel>Availability start:</FormLabel>
+                        <FormLabel>{availability.officeHoursSession ? 'Session start:' : 'Availability start:'}</FormLabel>
                         <Input defaultValue={moment(availability.startDate).format('dddd, MMMM Do YYYY, h:mm a')} disabled placeholder='Start Date' />
                     </FormControl>
                     <FormControl>
-                        <FormLabel>Availability end:</FormLabel>
+                        <FormLabel>{availability.officeHoursSession ? 'Session end:' : 'Availability end:'}</FormLabel>
                         <Input defaultValue={moment(availability.endDate).format('dddd, MMMM Do YYYY, h:mm a')} disabled placeholder='Start Date' />
                     </FormControl>
                     {availability.officeHoursSession && availability.officeHoursSession.student.name ? <FormControl mt={4}>

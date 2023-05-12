@@ -1,6 +1,9 @@
-import { FormEvent, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import {
-    Avatar, Badge, Box, Button, Flex, GridItem, Input, InputGroup, SimpleGrid, Text, useDisclosure, useToast
+    Avatar, Badge, Box, Button, Flex,
+    Input, InputGroup, SimpleGrid,
+    Text, useDisclosure, useToast,
+    GridItem,
 } from '@chakra-ui/react';
 import { AiOutlineSearch } from 'react-icons/ai';
 import type { User, UserRole } from '@prisma/client';
@@ -18,7 +21,7 @@ const Search = ({ role }: { role: Exclude<UserRole, "admin"> }) => {
     const {
         isOpen: isBookSessionModalOpen, onOpen: onBookSessionModalOpen, onClose: onBookSessionModalClose
     } = useDisclosure({ defaultIsOpen: false })
-    const { mutateAsync: searchUsers } = api.user.searchUsers.useMutation();
+    const { mutateAsync: searchUsers, isSuccess: searchUsersSuccess } = api.user.searchUsers.useMutation();
     const { data: sessionData } = useSession();
     const toast = useToast()
 
@@ -90,9 +93,9 @@ const Search = ({ role }: { role: Exclude<UserRole, "admin"> }) => {
                                     : <></>}
                             </Flex>
                         </GridItem>
-                    )) : <h5>No Users Found</h5>}
-
+                    )) : <GridItem colSpan={3}><Text align="center" fontFamily="body" fontSize='xl'>{keyword && searchUsersSuccess ? 'No Users Found' : 'Enter a keyword to begin the search'}</Text></GridItem>}
                 </SimpleGrid>
+
             </div>
             {isBookSessionModalOpen ? <BookSessionModal professor={professor} onClose={onBookSessionModalClose} /> : <></>}
         </>
