@@ -35,8 +35,11 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
+    "react-particles": "^2.9.3",
     "react-redux": "^8.0.5",
+    "react-tsparticles": "^2.9.3",
     "superjson": "1.9.1",
+    "tsparticles": "^2.9.3",
     "zod": "^3.20.6"
   },
   "devDependencies": {
