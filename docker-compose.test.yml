@@ -1,0 +1,37 @@
+version: "3.7"
+
+services:
+  proffice:
+    container_name: proffice-app
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    networks:
+      - app
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL="postgres://postgres:postgres@postgres:5432/proffice"
+      - NEXTAUTH_SECRET="VmVyeVNlY3VyZVRleHRJbmRlZWQ="
+      - NEXTAUTH_URL="http://localhost:3000"
+      - AZURE_AD_CLIENT_ID="${AZURE_AD_CLIENT_ID}"
+      - AZURE_AD_CLIENT_SECRET="${AZURE_AD_CLIENT_SECRET}"
+      - AZURE_AD_TENANT_ID="${AZURE_AD_TENANT_ID}"
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD="postgres"
+    ports:
+      - "5432:5432"
+    networks:
+      - app
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:
+
+networks:
+  app:
+    driver: bridge

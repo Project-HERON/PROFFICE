@@ -14,10 +14,10 @@ RUN yarn install
 
 COPY . .
 
-RUN yarn prisma db push --skip-generate --accept-data-loss
+RUN yarn prisma generate
 
 RUN yarn build
 
 EXPOSE 3000
 
-CMD [ "yarn", "start" ]
+CMD [ "/bin/bash", "-c", "yarn prisma db push --skip-generate --accept-data-loss;yarn start" ]
