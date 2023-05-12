@@ -44,4 +44,4 @@ jobs:
           AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
               
       - name: Run test
-        run: docker exec proffice-app /bin/bash -c yarn test
+        run: docker exec app /bin/bash -c yarn test
